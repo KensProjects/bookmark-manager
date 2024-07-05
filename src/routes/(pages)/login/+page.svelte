@@ -5,7 +5,7 @@
 </script>
 
 <PageContainer>
-	<h1>Login</h1>
+	<h1 class="mb-4">Login</h1>
 	<AuthForm type={'Login'} />
 	<RedirectButton href="/register" text="Register" />
 </PageContainer>

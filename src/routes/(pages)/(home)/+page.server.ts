@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from '../../(home)/$types';
 import prisma from '$lib/prisma';
 import { checkBookmark } from '$lib/server/bookmark-schema';
+import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) redirect(302, '/login');
@@ -54,22 +54,12 @@ export const actions: Actions = {
 			return fail(400);
 		}
 
-		if (name) {
+		const createdBookmark = { name, url, createdById: event.locals.user.id }
+		
 			return await prisma.bookmark.create({
-				data: {
-					name,
-					url,
-					createdById: event.locals.user.id
-				}
+				data: createdBookmark
 			});
-		} else {
-			return await prisma.bookmark.create({
-				data: {
-					url,
-					createdById: event.locals.user.id
-				}
-			});
-		}
+		
 	},
 	deleteBookmark: async (event) => {
 		const { id } = Object.fromEntries(await event.request.formData()) as { id: string };

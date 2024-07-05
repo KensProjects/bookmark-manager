@@ -12,8 +12,12 @@
 			<li class="flex justify-center items-center w-full h-full">
 				<div class="w-full h-40 flex flex-col justify-around items-center shadow-lg overflow-auto">
 					<div id="info" class="flex flex-col justify-center items-center">
-						<h2 class="overflow-auto">Name: {name}</h2>
-						<a href={url} class="overflow-auto">{url}</a>
+						<h2 class="overflow-auto">{name}</h2>
+						<div class="url-container">
+							<a href={url} class="overflow-auto flex justify-center items-center">
+								<span>{url}</span>
+							</a>
+						</div>
 					</div>
 					<form
 						method="post"
@@ -21,7 +25,10 @@
 						class="bg-red-500 hover:bg-red-400 w-40 rounded-xl flex justify-center items-center text-white h-10 overflow-hidden"
 					>
 						<input type="hidden" name="id" value={id} />
-						<button type="submit" class="w-full h-full">Delete</button>
+						<button type="submit" class="w-full h-full flex justify-around items-center">
+							<span>Delete</span>
+							<img src="/trash.svg" alt="trash" width="20" height="20" />
+						</button>
 					</form>
 				</div>
 			</li>

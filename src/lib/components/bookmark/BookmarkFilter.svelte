@@ -27,6 +27,8 @@
 		<button type="submit">Filter</button>
 	</form>
 	<form on:submit|preventDefault={() => removeFilter()} method="get">
-		<button type="submit">Remove</button>
+		<button type="submit" class="flex justify-center items-center">
+			<span>Remove</span>
+		</button>
 	</form>
 </div>
