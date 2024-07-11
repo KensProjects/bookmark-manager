@@ -9,8 +9,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./bm-mngr.db"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -24,7 +25,7 @@ model User {
 
 model Bookmark {
   id          String   @id @unique @default(cuid())
-  name        String  @default("New Bookmark")
+  name        String   @default("New Bookmark")
   url         String
   createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById String

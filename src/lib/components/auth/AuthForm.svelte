@@ -1,23 +1,59 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	export let type;
+	import * as Form from '$lib/components/ui/form';
+	import * as Card from '$lib/components/ui/card';
+	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { Input } from '../ui/input';
+	import { formSchema, type FormSchema } from '$lib/schemas/auth-schema';
 
-	const formClass =
-		'w-1/2 h-full border-4 border-blue-600 flex flex-col justify-between items-center p-2 rounded-xl';
-	const inputClass = 'w-3/4 p-1 border-none ring-1 rounded-md';
-	const formControlClass = 'flex flex-col justify-center items-center w-full gap-2';
-	const buttonClass = 'w-40 h-10 bg-blue-800 hover:bg-blue-700 rounded-lg text-white';
+	export let data: SuperValidated<Infer<FormSchema>>;
+	export let type: "Login" | "Register"	
+
+	const form = superForm(data, {
+		validators: zodClient(formSchema)
+	});
+
+	const { form: authForm, enhance: authEnhance, errors } = form;
+	const inputClass = 'w-full';
 </script>
 
-<form method="post" use:enhance class={formClass}>
-	<div class={formControlClass}>
-		<label for="username">Username</label>
-		<input class={inputClass} name="username" id="username-input" required /><br />
-	</div>
+<Card.Root class="w-full h-full flex flex-col justify-between items-center overflow-auto">
+	<Card.Header class="overflow-auto">
+		<Card.Title>{type}</Card.Title>
+		<Card.Description class=""></Card.Description>
+	</Card.Header>
+	<Card.Content class="w-full h-full flex justify-center items-center">
+		<form
+			method="POST"
+			use:authEnhance
+			class="flex flex-col justify-between items-center w-full md:w-3/4 h-fit gap-4 px-4"
+		>
+			<Form.Field {form} name="username" class={inputClass}>
+				<Form.Control let:attrs>
+					<Form.Label>Username</Form.Label>
+					<Input {...attrs} bind:value={$authForm.username} placeholder="Enter username" required />
+				</Form.Control>
+				<!-- <Form.Description>This is your public display name.</Form.Description> -->
+				<Form.FieldErrors />
+			</Form.Field>
 
-	<div class={formControlClass}>
-		<label for="password">Password</label>
-		<input class={inputClass} type="password" name="password" id="password-input" required /><br />
-	</div>
-	<button class={buttonClass}>{type}</button>
-</form>
+			<Form.Field {form} name="password" class={inputClass}>
+				<Form.Control let:attrs>
+					<Form.Label>Password</Form.Label>
+					<Input
+						{...attrs}
+						bind:value={$authForm.password}
+						placeholder="Enter password"
+						required
+						type="password"
+					/>
+				</Form.Control>
+				<!-- <Form.Description>This is your public display name.</Form.Description> -->
+				<Form.FieldErrors />
+			</Form.Field>
+
+			<Form.Button>Submit</Form.Button>
+		</form>
+	</Card.Content>
+	<Card.Footer class="flex justify-center items-center w-full"></Card.Footer>
+</Card.Root>

@@ -5,6 +5,7 @@
 	import Bookmarks from '$lib/components/bookmark/Bookmarks.svelte';
 	import type { PageData } from './$types';
 	import PageContainer from '$lib/components/PageContainer.svelte';
+	import CreateBookmarkButton from '$lib/components/bookmark/CreateBookmarkButton.svelte';
 
 	export let data: PageData;
 
@@ -16,15 +17,17 @@
 
 	$: bookmarks = data.profile!.bookmarks.filter((bookmark) => bookmark.name.includes(query));
 
-	$: bookmarkCount = bookmarks.length;
+	$: count = data.count;
 
-	queryWritable.subscribe((value) => {
-		query = value;
-	});
+	$: page = data.page;
+
+	$: filteredBookmarksCount = bookmarks.length
+
 </script>
 
 <PageContainer>
-	<BookmarkForm />
-	<BookmarkFilter />
-	<Bookmarks count={bookmarkCount} {bookmarks} />
+	<CreateBookmarkButton data={data.createForm} />
+	<BookmarkForm data={data.createForm} />
+	<BookmarkFilter data={data.filterForm} />
+	<Bookmarks {count} {bookmarks} data={data.deleteForm} pageNumber={page} {filteredBookmarksCount} />
 </PageContainer>

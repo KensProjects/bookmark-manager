@@ -1,34 +1,51 @@
+<script lang="ts">
+	import * as Form from '$lib/components/ui/form';
+	import { bookmarkSchema, type BookmarkSchema } from '$lib/schemas/bookmark-schema';
+	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { Input } from '../ui/input';
+
+	export let data: SuperValidated<Infer<BookmarkSchema>>;
+
+	const form = superForm(data, {
+		validators: zodClient(bookmarkSchema)
+	});
+
+	const { form: createBookmarkForm, enhance: createEnhance } = form;
+	const inputClass = 'w-full';
+</script>
+
 <form
-	method="post"
+	method="POST"
+	use:createEnhance
 	action="?/createBookmark"
-	class="bg-gray-200 flex flex-col sm:flex-row justify-center items-center w-full h-fit"
+	class="hidden sm:flex justify-between items-start w-full h-fit gap-4 px-4"
 >
-	<div id="form-fields" class="flex justify-center items-center w-full gap-1 p-4">
-		<div class="form-control w-full flex justify-center items-center flex-col h-full">
-			<label for="bookmark-name-form">Name</label>
-			<input
-				class="border-none ring-1 p-1 rounded-lg w-full"
-				type="text"
-				name="bookmark-name"
-				id="bookmark-name-form"
-				placeholder="name"
+	<Form.Field {form} name="name" class={inputClass}>
+		<Form.Control let:attrs>
+			<Input
+				{...attrs}
+				bind:value={$createBookmarkForm.name}
+				placeholder="Enter bookmark name (optional)"
+				required={false}
 			/>
-		</div>
+		</Form.Control>
+		<!-- <Form.Description>This is your public display name.</Form.Description> -->
+		<Form.FieldErrors />
+	</Form.Field>
 
-		<div class="form-control w-full flex justify-center items-center flex-col h-full">
-			<label for="bookmark-url-form">Url</label>
-			<input
-				class="border-none ring-1 p-1 rounded-lg w-full"
-				type="url"
-				name="bookmark-url"
-				id="bookmark-url-form"
+	<Form.Field {form} name="url" class={inputClass}>
+		<Form.Control let:attrs>
+			<Input
+				{...attrs}
+				bind:value={$createBookmarkForm.url}
+				placeholder="Enter bookmark url (required)"
 				required
-				placeholder="url"
 			/>
-		</div>
-	</div>
+		</Form.Control>
+		<!-- <Form.Description>This is your public display name.</Form.Description> -->
+		<Form.FieldErrors />
+	</Form.Field>
 
-	<button type="submit" class="bg-green-400 hover:bg-green-500 h-10 w-40 rounded-xl text-white"
-		>Create Bookmark</button
-	>
+	<Form.Button>Create</Form.Button>
 </form>

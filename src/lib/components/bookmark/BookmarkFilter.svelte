@@ -1,5 +1,19 @@
 <script lang="ts">
+	import * as Form from '$lib/components/ui/form';
+	import { bookmarkFilterSchema, type BookmarkFilterSchema } from '$lib/schemas/bookmark-schema';
+	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { Input } from '../ui/input';
 	import { queryWritable } from '../../../store';
+	import Button from '../ui/button/button.svelte';
+
+	export let data: SuperValidated<Infer<BookmarkFilterSchema>>;
+
+	const form = superForm(data, {
+		validators: zodClient(bookmarkFilterSchema)
+	});
+
+	const { enhance: filterEnhance } = form;
 
 	let queryString: string;
 
@@ -8,7 +22,6 @@
 			queryString = '';
 		}
 		$queryWritable = queryString;
-		queryString = '';
 	}
 	function removeFilter() {
 		$queryWritable = '';
@@ -16,19 +29,29 @@
 	}
 </script>
 
-<div id="filters" class="flex flex-col justify-between items-center bg-red-100 p-1 w-full">
-	<h2>Filter Bookmarks by Name</h2>
-	<form
-		on:submit|preventDefault={() => setFilter()}
-		method="get"
-		class="flex justify-center items-center"
+<form
+	method="post"
+	use:filterEnhance
+	action="?/filterBookmarks"
+	on:submit={() => setFilter()}
+	class="flex flex-col justify-between items-center w-full h-fit"
+>
+	<Form.Field {form} name="query" class="w-full flex flex-col justify-center items-center">
+		<Form.Control let:attrs>
+			<Input
+				{...attrs}
+				bind:value={queryString}
+				class="w-full"
+				placeholder="Filter bookmark by name..."
+			/>
+		</Form.Control>
+		<Form.FieldErrors />
+	</Form.Field>
+	<div
+		id="filter-button-group"
+		class="flex-col sm:flex-row justify-center gap-4 items-center flex w-full"
 	>
-		<input type="text" name="query" id="bookmark-filter-form" bind:value={queryString} />
-		<button type="submit">Filter</button>
-	</form>
-	<form on:submit|preventDefault={() => removeFilter()} method="get">
-		<button type="submit" class="flex justify-center items-center">
-			<span>Remove</span>
-		</button>
-	</form>
-</div>
+		<Form.Button>Filter Bookmarks</Form.Button>
+		<Button variant="destructive" on:click={() => removeFilter()}>Remove Filter</Button>
+	</div>
+</form>

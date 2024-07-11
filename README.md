@@ -1,6 +1,9 @@
-# A full-stack that allows users to create website bookmarks for convenience.  
+# A full-stack SvelteKit application that allows users to create website bookmarks.
 
-## Tech Stack:  
-### SvelteKit   
-### TailwindCSS  
+## Tech Stack:
+
+### SvelteKit
+
+### TailwindCSS / shadcn-svelte  
+
 ### Prisma / SQLite
