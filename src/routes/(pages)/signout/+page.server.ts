@@ -1,12 +1,11 @@
-import { lucia } from "$lib/server/auth";
-import { fail, redirect } from "@sveltejs/kit";
-import type { Actions, PageServerLoad } from "./$types";
+import { lucia } from '$lib/server/auth';
+import { fail, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 
-
-export const load: PageServerLoad =  async (event) => {
-    if (!event.locals.session) {
-		redirect(302, "/login");
-    }
+export const load: PageServerLoad = async (event) => {
+	if (!event.locals.session) {
+		redirect(302, '/login');
+	}
 };
 
 export const actions: Actions = {
@@ -17,9 +16,9 @@ export const actions: Actions = {
 		await lucia.invalidateSession(event.locals.session.id);
 		const sessionCookie = lucia.createBlankSessionCookie();
 		event.cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: ".",
+			path: '.',
 			...sessionCookie.attributes
 		});
-		redirect(302, "/login");
+		redirect(302, '/login');
 	}
 };

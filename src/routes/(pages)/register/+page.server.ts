@@ -1,64 +1,50 @@
 import { lucia } from '$lib/server/auth';
-import { fail, redirect} from '@sveltejs/kit';
-import { generateIdFromEntropySize } from 'lucia';
-import { checkFormCredentials } from '$lib/server/input-schema';
+import {  redirect } from '@sveltejs/kit';
+import { formSchema } from '$lib/schemas/auth-schema';
 import prisma from '$lib/prisma';
 import { hash } from '@node-rs/argon2';
 import type { Actions, PageServerLoad } from './$types';
+import { setError, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) redirect(302, '/');
+	const registerForm = await superValidate(event, zod(formSchema));
+	return { registerForm };
 };
 
 export const actions: Actions = {
 	default: async (event) => {
+		const registerForm = await superValidate(event, zod(formSchema));
+
 		try {
-			const formData = await event.request.formData();
-			const username = formData.get('username') as string;
-			const password = formData.get('password') as string;
-			const input = { username, password };
-
-			const checkedFormCredentials = checkFormCredentials(input);
-
-			if (checkedFormCredentials.success === false) {
-				return fail(400);
+			const existingUser = await prisma.user.findUnique({
+				where: { username: registerForm.data.username }
+			});
+			if (existingUser) {
+					return setError(registerForm,'username', 'Registration error!')
 			}
 
-			const userId = generateIdFromEntropySize(10);
-			const passwordHash = await hash(password, {
+			const hashedPassword = await hash(registerForm.data.password, {
 				memoryCost: 19456,
 				timeCost: 2,
 				outputLen: 32,
 				parallelism: 1
 			});
 
-			const existingUser = await prisma.user.findUnique({
-				where: {
-					username
-				}
+			const newUser = await prisma.user.create({
+				data: { ...registerForm.data, password: hashedPassword }
 			});
-
-			if (existingUser) {
-				return fail(401);
-			}
-
-			await prisma.user.create({
-				data: {
-					username,
-					password: passwordHash
-				}
-			});
-
-			const session = await lucia.createSession(userId, {});
+			const session = await lucia.createSession(newUser.id, {});
 			const sessionCookie = lucia.createSessionCookie(session.id);
 			event.cookies.set(sessionCookie.name, sessionCookie.value, {
 				path: '.',
 				...sessionCookie.attributes
 			});
 
-			redirect(302, '/');
-		} catch (error) {
-			console.log(error);
+			return { registerForm };
+		} catch (err) {
+			console.error(err);
 		}
 	}
 };

@@ -2,10 +2,11 @@
 	import AuthForm from '$lib/components/auth/AuthForm.svelte';
 	import RedirectButton from '$lib/components/auth/RedirectButton.svelte';
 	import PageContainer from '$lib/components/PageContainer.svelte';
+
+	export let data;
 </script>
 
 <PageContainer>
-	<h1 class="mb-4">Register</h1>
-	<AuthForm type={'Register'} />
+	<AuthForm type="Register" data={data.registerForm} />
 	<RedirectButton href="/login" text="Login" />
 </PageContainer>

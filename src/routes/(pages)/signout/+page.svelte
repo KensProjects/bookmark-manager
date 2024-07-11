@@ -1,15 +1,25 @@
 <script>
-	import { enhance } from "$app/forms";
-	import PageContainer from "$lib/components/PageContainer.svelte";
-    const signoutButtonSkeletonStyle = "w-full h-fit rounded-sm border border-black flex justify-center items-center"
+	import { enhance } from '$app/forms';
+	import PageContainer from '$lib/components/PageContainer.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import * as Card from '$lib/components/ui/card';
+
 </script>
 
 <PageContainer>
-    <form method="post" use:enhance class="w-40 h-20 border border-purple-600 flex flex-col justify-between items-center rounded-lg">
-        <p>Signout?</p>
-        <div id="signout-button-group" class="w-full h-fit justify-between items-center flex p-2">
-            <button type="submit" class={`${signoutButtonSkeletonStyle} bg-green-300 `}>Yes</button>
-            <a href="/" class={`${signoutButtonSkeletonStyle} bg-red-300`}>No</a>
-        </div>
-    </form>
+	<Card.Root class="">
+		<Card.Header class="flex justify-center items-center">
+			<Card.Title>Signout</Card.Title>
+			<Card.Description>Do you wish to sign out?</Card.Description>
+		</Card.Header>
+		<Card.CardContent>
+			<form use:enhance method="post" class="flex justify-between items-center">
+				<Button variant="destructive" type="submit">Yes</Button>
+				<Button variant="secondary" class="p-0 flex justify-center items-center">
+					<a href="/" class="p-4 py-2 flex justify-center items-center">No</a>
+				</Button>
+			</form>
+		</Card.CardContent>
+		<Card.Footer class="flex justify-center items-center w-full"></Card.Footer>
+	</Card.Root>
 </PageContainer>

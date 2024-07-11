@@ -1,48 +1,39 @@
 import { lucia } from '$lib/server/auth';
-import { fail, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import prisma from '$lib/prisma';
 import { verify } from '@node-rs/argon2';
 
-import { checkFormCredentials } from '$lib/server/input-schema';
+import { formSchema } from '$lib/schemas/auth-schema';
 import type { Actions, PageServerLoad } from './$types';
+import { setError, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) redirect(302, '/');
+	const loginForm = await superValidate(event, zod(formSchema));
+	return { loginForm };
 };
 
 export const actions: Actions = {
 	default: async (event) => {
+		const loginForm = await superValidate(event, zod(formSchema));
+
 		try {
-			const formData = await event.request.formData();
-			const username = formData.get('username') as string;
-			const password = formData.get('password') as string;
-			const input = { username, password };
-
-			const checkedInput = checkFormCredentials(input);
-
-			if (!checkedInput.success) {
-				return fail(400);
-			}
-
 			const existingUser = await prisma.user.findUnique({
-				where: { username }
+				where: { username: loginForm.data.username }
 			});
 			if (!existingUser) {
-				return fail(400, {
-					message: 'Login failed!'
-				});
+				return setError(loginForm, 'username', 'Authenicaiton error!')
 			}
 
-			const validPassword = await verify(existingUser.password, password, {
+			const validPassword = await verify(existingUser.password, loginForm.data.password, {
 				memoryCost: 19456,
 				timeCost: 2,
 				outputLen: 32,
 				parallelism: 1
 			});
 			if (!validPassword) {
-				return fail(400, {
-					message: 'Login failed!'
-				});
+				return setError(loginForm, 'username', 'Authenicaiton error!')
 			}
 
 			const session = await lucia.createSession(existingUser.id, {});
@@ -51,10 +42,9 @@ export const actions: Actions = {
 				path: '.',
 				...sessionCookie.attributes
 			});
-
-			redirect(302, '/');
-		} catch (error) {
-			console.log(error);
+			return { loginForm };
+		} catch (err) {
+			console.error(err);
 		}
 	}
 };

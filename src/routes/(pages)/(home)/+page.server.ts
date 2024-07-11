@@ -1,10 +1,28 @@
 import { fail, redirect } from '@sveltejs/kit';
 import prisma from '$lib/prisma';
-import { checkBookmark } from '$lib/server/bookmark-schema';
+import {
+	bookmarkFilterSchema,
+	bookmarkIdSchema,
+	bookmarkSchema
+} from '$lib/schemas/bookmark-schema';
 import type { Actions, PageServerLoad } from './$types';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
 
 export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) redirect(302, '/login');
+
+	const createForm = await superValidate(event, zod(bookmarkSchema));
+	const deleteForm = await superValidate(event, zod(bookmarkIdSchema));
+	const filterForm = await superValidate(event, zod(bookmarkFilterSchema));
+	const searchParams = event.url.searchParams;
+	let bookmarkPage = searchParams.get('page') ?? '1';
+
+	if (parseInt(bookmarkPage) < 1) {
+		bookmarkPage = '1';
+	}
+
+	const convertedPage = parseInt(bookmarkPage);
 
 	const userProfile = await prisma.user.findUnique({
 		where: {
@@ -12,7 +30,7 @@ export const load: PageServerLoad = async (event) => {
 		},
 		select: {
 			username: true,
-			bookmarks: true
+			bookmarks: { take: 10, skip: (convertedPage - 1) * 10 }
 		}
 	});
 	const bookmarks = await prisma.user.findUnique({
@@ -33,45 +51,52 @@ export const load: PageServerLoad = async (event) => {
 
 	return {
 		user: event.locals.user,
-		profile: profile,
-		bookmarkCount: count
+		profile,
+		count,
+		createForm,
+		deleteForm,
+		filterForm,
+		page: convertedPage
 	};
 };
 
 export const actions: Actions = {
 	createBookmark: async (event) => {
-		if (!event.locals.user) redirect(302, '/login');
-
-		const formData = await event.request.formData();
-		let name = formData.get('bookmark-name') as string | undefined;
-		if (!name) name = undefined;
-		const url = formData.get('bookmark-url') as string;
-		const bookmarkInput = { name, url };
-
-		const checkedBookmarkInfo = checkBookmark(bookmarkInput);
-
-		if (!checkedBookmarkInfo.success) {
-			return fail(400);
+		const createForm = await superValidate(event, zod(bookmarkSchema));
+		if (!createForm.valid) {
+			return fail(400, {
+				createForm
+			});
 		}
 
-		const createdBookmark = { name, url, createdById: event.locals.user.id }
-		
-			return await prisma.bookmark.create({
-				data: createdBookmark
-			});
-		
+		const createdBookmark = await prisma.bookmark.create({
+			data: {
+				...createForm.data,
+				createdById: event.locals.user!.id
+			}
+		});
+		return {
+			createForm,
+			createdBookmark
+		};
 	},
 	deleteBookmark: async (event) => {
-		const { id } = Object.fromEntries(await event.request.formData()) as { id: string };
+		const deleteForm = await superValidate(event, zod(bookmarkIdSchema));
 
-		try {
-			return await prisma.bookmark.delete({
-				where: {
-					id
-				}
-			});
-		} catch (error) {
-			console.log(error);
-		}
+		const deletedBookmark = await prisma.bookmark.delete({
+			where: {
+				...deleteForm.data
+			}
+		});
+		return {
+			deletedBookmark,
+			deleteForm
+		};
+	},
+	filterBookmarks: async (event) => {
+		const filterForm = await superValidate(event, zod(bookmarkFilterSchema));
+
+		return {filterForm}
+
 	}
 };
