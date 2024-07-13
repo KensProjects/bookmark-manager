@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card'
+	import * as Card from '$lib/components/ui/card';
 	import * as Form from '$lib/components/ui/form';
 	import { bookmarkIdSchema, type BookmarkIdSchema } from '$lib/schemas/bookmark-schema';
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
@@ -21,7 +21,6 @@
 	});
 
 	$: bookmarksAreFiltered = filteredBookmarksCount > 0 && query !== '';
-
 
 	const form = superForm(data, {
 		validators: zodClient(bookmarkIdSchema)
@@ -51,7 +50,7 @@
 						<Pagination.Ellipsis />
 					</Pagination.Item>
 				{:else}
-					<Pagination.Item  class="p-0 ">
+					<Pagination.Item class="p-0 ">
 						<Pagination.Link
 							{page}
 							isActive={currentPage == page.value}

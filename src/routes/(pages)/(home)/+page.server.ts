@@ -96,7 +96,6 @@ export const actions: Actions = {
 	filterBookmarks: async (event) => {
 		const filterForm = await superValidate(event, zod(bookmarkFilterSchema));
 
-		return {filterForm}
-
+		return { filterForm };
 	}
 };

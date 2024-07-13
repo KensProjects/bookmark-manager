@@ -3,7 +3,6 @@
 	import PageContainer from '$lib/components/PageContainer.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-
 </script>
 
 <PageContainer>

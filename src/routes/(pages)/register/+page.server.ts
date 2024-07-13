@@ -1,5 +1,5 @@
 import { lucia } from '$lib/server/auth';
-import {  redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { formSchema } from '$lib/schemas/auth-schema';
 import prisma from '$lib/prisma';
 import { hash } from '@node-rs/argon2';
@@ -22,7 +22,7 @@ export const actions: Actions = {
 				where: { username: registerForm.data.username }
 			});
 			if (existingUser) {
-					return setError(registerForm,'username', 'Registration error!')
+				return setError(registerForm, 'username', 'Registration error!');
 			}
 
 			const hashedPassword = await hash(registerForm.data.password, {

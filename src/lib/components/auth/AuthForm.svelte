@@ -7,20 +7,20 @@
 	import { formSchema, type FormSchema } from '$lib/schemas/auth-schema';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
-	export let type: "Login" | "Register"	
+	export let type: 'Login' | 'Register';
 
 	const form = superForm(data, {
 		validators: zodClient(formSchema)
 	});
 
-	const { form: authForm, enhance: authEnhance, errors } = form;
+	const { form: authForm, enhance: authEnhance } = form;
 	const inputClass = 'w-full';
 </script>
 
 <Card.Root class="w-full h-full flex flex-col justify-between items-center overflow-auto">
 	<Card.Header class="overflow-auto">
 		<Card.Title>{type}</Card.Title>
-		<Card.Description class=""></Card.Description>
+		<Card.Description>Enter Credentials Below</Card.Description>
 	</Card.Header>
 	<Card.Content class="w-full h-full flex justify-center items-center">
 		<form

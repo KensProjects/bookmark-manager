@@ -21,13 +21,18 @@
 
 	$: page = data.page;
 
-	$: filteredBookmarksCount = bookmarks.length
-
+	$: filteredBookmarksCount = bookmarks.length;
 </script>
 
 <PageContainer>
 	<CreateBookmarkButton data={data.createForm} />
 	<BookmarkForm data={data.createForm} />
 	<BookmarkFilter data={data.filterForm} />
-	<Bookmarks {count} {bookmarks} data={data.deleteForm} pageNumber={page} {filteredBookmarksCount} />
+	<Bookmarks
+		{count}
+		{bookmarks}
+		data={data.deleteForm}
+		pageNumber={page}
+		{filteredBookmarksCount}
+	/>
 </PageContainer>

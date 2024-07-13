@@ -30,7 +30,6 @@
 				required={false}
 			/>
 		</Form.Control>
-		<!-- <Form.Description>This is your public display name.</Form.Description> -->
 		<Form.FieldErrors />
 	</Form.Field>
 
@@ -43,7 +42,6 @@
 				required
 			/>
 		</Form.Control>
-		<!-- <Form.Description>This is your public display name.</Form.Description> -->
 		<Form.FieldErrors />
 	</Form.Field>
 

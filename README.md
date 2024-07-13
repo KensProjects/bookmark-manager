@@ -4,6 +4,6 @@
 
 ### SvelteKit
 
-### TailwindCSS / shadcn-svelte  
+### TailwindCSS / shadcn-svelte
 
-### Prisma / SQLite
+### Prisma / PostgreSQL (Supabase)  
