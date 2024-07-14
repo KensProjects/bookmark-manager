@@ -23,7 +23,7 @@ export const actions: Actions = {
 				where: { username: loginForm.data.username }
 			});
 			if (!existingUser) {
-				return setError(loginForm, 'username', 'Authenicaiton error!');
+				return setError(loginForm, 'username', 'Authenication error!');
 			}
 
 			const validPassword = await verify(existingUser.password, loginForm.data.password, {
@@ -33,7 +33,7 @@ export const actions: Actions = {
 				parallelism: 1
 			});
 			if (!validPassword) {
-				return setError(loginForm, 'username', 'Authenicaiton error!');
+				return setError(loginForm, 'username', 'Authenication error!');
 			}
 
 			const session = await lucia.createSession(existingUser.id, {});

@@ -6,4 +6,4 @@
 
 ### TailwindCSS / shadcn-svelte
 
-### Prisma / PostgreSQL (Supabase)  
+### Prisma / PostgreSQL (Supabase)

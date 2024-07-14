@@ -18,7 +18,7 @@
 </script>
 
 <Card.Root class="w-full h-full flex flex-col justify-between items-center overflow-auto">
-	<Card.Header class="overflow-auto">
+	<Card.Header class="overflow-auto flex flex-col justify-center items-center">
 		<Card.Title>{type}</Card.Title>
 		<Card.Description>Enter Credentials Below</Card.Description>
 	</Card.Header>
