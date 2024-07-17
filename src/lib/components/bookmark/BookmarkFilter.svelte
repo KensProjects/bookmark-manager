@@ -49,7 +49,7 @@
 	</Form.Field>
 	<div
 		id="filter-button-group"
-		class="flex-col sm:flex-row justify-center gap-4 items-center flex w-full"
+		class="justify-center gap-4 items-center flex w-full"
 	>
 		<Form.Button>Filter Bookmarks</Form.Button>
 		<Button variant="destructive" on:click={() => removeFilter()}>Remove Filter</Button>

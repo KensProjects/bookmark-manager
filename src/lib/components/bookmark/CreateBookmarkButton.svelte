@@ -60,8 +60,8 @@
 						<Form.FieldErrors />
 					</Form.Field>
 
-					<AlertDialog.Footer>
-						<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+					<AlertDialog.Footer class='flex flex-row justify-between items-center'>
+						<AlertDialog.Cancel class="m-0">Cancel</AlertDialog.Cancel>
 						<AlertDialog.Action type="submit">Create</AlertDialog.Action>
 					</AlertDialog.Footer>
 				</form>
